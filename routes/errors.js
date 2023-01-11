@@ -9,6 +9,12 @@ router.all("/participants", (req, res) => {
 });
 
 router.all("/messages", (req, res) => {
+    if (req.method === "GET") {
+        const { user } = req.headers;
+        if (!user || (user && typeof user !== "string")) return res.status(errors["400.1"].code).send(errors["400.1"]);
+        const { limit } = req.query;
+        if (limit && Number.isNaN(parseInt(limit))) return res.status(errors["400.2"].code).send(errors["400.2"]);
+    }
     if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
 });
 
