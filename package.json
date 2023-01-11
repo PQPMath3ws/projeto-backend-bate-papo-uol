@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple API for Driven project called Bate-Papo UOL with Mongo DBMS",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon index.js --inspect"
   },
