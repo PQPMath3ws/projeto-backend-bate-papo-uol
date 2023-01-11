@@ -4,6 +4,8 @@ import express from "express";
 
 import DatabaseConfig from "./database.js";
 
+import ErrorsRoutes from "../routes/errors.js";
+
 dotenv.config();
 
 const app = express();
@@ -22,6 +24,8 @@ function initializeServer() {
     if (!server) {
         app.use(cors());
         app.use(express.json());
+
+        app.use(ErrorsRoutes);
         
         server = app.listen(process.env.APP_PORT);
     }
