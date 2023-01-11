@@ -1,11 +1,18 @@
 import express from "express";
 
 import errors from "../const/errors.js";
+import { validateParticipant } from "../schema/participants.js";
 
 const router = express.Router();
 
-router.all("/participants", (req, res) => {
+router.all("/participants", async (req, res) => {
     if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
+    const participantValidation = await validateParticipant(req.participant);
+    if (participantValidation.status !== "ok") {
+        errors["422.1"].message = participantValidation.message;
+        return res.status(errors["422.1"].code).send(errors["422.1"]);
+    }
+    return res.status(errors["409.1"].code).send(errors["409.1"]);
 });
 
 router.all("/messages", (req, res) => {
