@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
 
-import DatabaseConfig from "./database.js";
+import { closeDbConnection } from "./database.js";
 
 import ErrorsRoutes from "../routes/errors.js";
 
@@ -13,9 +13,11 @@ let server = null;
 
 async function onShutDownServer() {
     if (server) {
-        await DatabaseConfig.closeDbConnection();
-        server.close(() => {
-            process.exit(0);
+        closeDbConnection((error) => {
+            if (error) throw Error("Falha ao desconectar do banco de dados!");
+            server.close(() => {
+                process.exit(0);
+            });
         });
     }
 }

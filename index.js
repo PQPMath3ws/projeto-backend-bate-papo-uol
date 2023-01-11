@@ -1,15 +1,12 @@
-import DatabaseConfig from "./config/database.js";
 import initializeExpressServer from "./config/express.js";
 
-(async function initialize() {
-    if (await DatabaseConfig.openDbConnection()) {
-        if (await DatabaseConfig.connectToDb()) {
+import { openDbConnection } from "./config/database.js";
+
+(function initialize() {
+    openDbConnection((error) => {
+        if (error) throw Error("Falha ao conectar ao banco de dados!");
+        else {
             initializeExpressServer();
-        } else {
-            await DatabaseConfig.closeDbConnection();
         }
-        await DatabaseConfig.closeDbConnection();
-    } else {
-        await DatabaseConfig.closeDbConnection();
-    }
+    });
 })();

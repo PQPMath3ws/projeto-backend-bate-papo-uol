@@ -6,39 +6,30 @@ dotenv.config();
 let mongoConnection = null;
 let db = null;
 
-const DatabaseConfig = {
-    db,
-    openDbConnection: async function() {
-        try {
-            if (!mongoConnection) {
-                mongoConnection = new MongoClient(process.env.DATABASE_URL);
-                await mongoConnection.connect();
-            }
-            return true;
-        } catch (_) {
-            return false;
-        }
-    },
-    connectToDb: async function() {
-        try {
-            if (!db) {
-                db = await mongoConnection.db();
-            }
-            return true;
-        } catch(_) {
-            return false;
-        }
-    },
-    closeDbConnection: async function() {
-        try {
-            if (mongoConnection) {
-                await mongoConnection.close();
-            }
-            return true;
-        } catch (_) {
-            return false;
-        }
-    },
+const openDbConnection = callback => {
+    if (!mongoConnection) {
+        mongoConnection = new MongoClient(process.env.DATABASE_URL, { useUnifiedTopology: true });
+        mongoConnection.connect().then(client => {
+            db = client.db();
+            callback(null);
+        }).catch(error => {
+            callback(error);
+        });
+    }
 };
 
-export default DatabaseConfig;
+const getDbInstance = () => {
+    if (!db) throw Error("Banco de dados não inicializado!");
+    return db;
+};
+
+const closeDbConnection = callback => {
+    if (mongoConnection) {
+        mongoConnection.close().then((client) => {
+            db = client;
+            callback(null);
+        });
+    }
+};
+
+export { openDbConnection, getDbInstance, closeDbConnection };
