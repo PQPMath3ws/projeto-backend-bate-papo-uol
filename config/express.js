@@ -5,6 +5,7 @@ import express from "express";
 import { closeDbConnection } from "./database.js";
 
 import ErrorsRoutes from "../routes/errors.js";
+import ParticipantsRoutes from "../routes/participants.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ function initializeServer() {
         app.use(cors());
         app.use(express.json());
 
+        app.use(ParticipantsRoutes);
         app.use(ErrorsRoutes);
         
         server = app.listen(process.env.APP_PORT);
