@@ -7,6 +7,7 @@ import { closeDbConnection } from "./database.js";
 import ErrorsRoutes from "../routes/errors.js";
 import MessagesRoutes from "../routes/messages.js";
 import ParticipantsRoutes from "../routes/participants.js";
+import StatusRoutes from "../routes/status.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ function initializeServer() {
 
         app.use(MessagesRoutes);
         app.use(ParticipantsRoutes);
+        app.use(StatusRoutes);
         app.use(ErrorsRoutes);
         
         server = app.listen(process.env.APP_PORT);

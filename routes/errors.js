@@ -33,8 +33,15 @@ router.all("/messages", async (req, res) => {
     return res.status(errors["422.1"].code).send(errors["422.1"]);
 });
 
+router.all("/status", async (req, res) => {
+    const { user } = req.headers;
+    if (!user || (user && typeof user !== "string")) return res.status(errors["400.3"].code).send(errors["400.3"]);
+    if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
+    return res.status(errors["404.2"].code).send(errors["404.2"]);
+});
+
 router.all("*", (req, res) => {
-    return res.status(errors[404].code).send(errors[404]);
+    return res.status(errors["404.1"].code).send(errors["404.1"]);
 });
 
 export default router;
