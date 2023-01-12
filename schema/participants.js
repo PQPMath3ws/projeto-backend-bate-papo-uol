@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const ParticipantsSchema = Joi.object({
-    name: Joi.string().min(3).max(40).required(),
+    name: Joi.string().min(3).max(40).regex(/^(?!todos$)/i).required(),
     lastStatus: Joi.number().integer().required(),
 });
 
