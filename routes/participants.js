@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import express from "express";
 
 import { getDbInstance } from "../config/database.js";
@@ -24,6 +25,14 @@ router.post("/participants", async (req, res, next) => {
     const participantExists = await getDbInstance().collection("participants").findOne({name});
     if (participantExists) return next();
     await getDbInstance().collection("participants").insertOne(participant);
+    const messageStatus = {
+        from: name,
+        to: "Todos",
+        text: "entra na sala...",
+        type: 'status',
+        time: dayjs().format("HH:mm:ss"),
+    };
+    await getDbInstance().collection("messages").insertOne(messageStatus);
     return res.status(201).send({code: 201, message: "participant created successfully"});
 });
 
