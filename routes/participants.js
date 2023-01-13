@@ -7,7 +7,12 @@ import { validateParticipant } from "../schema/participants.js";
 const router = express.Router();
 
 router.get("/participants", async (req, res) => {
-    const participants = await getDbInstance().collection("participants").find().toArray();
+    const participants = await getDbInstance().collection("participants").find({
+    }, {
+        projection:{
+            _id:0
+        }
+    }).toArray();
     return res.status(200).send(participants);
 });
 
