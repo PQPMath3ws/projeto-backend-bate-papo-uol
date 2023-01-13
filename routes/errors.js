@@ -29,6 +29,7 @@ router.all("/messages", async (req, res) => {
     if (req.method === "GET") {
         const { limit } = req.query;
         if (limit && Number.isNaN(parseInt(limit))) return res.status(errors["400.2"].code).send(errors["400.2"]);
+        if (limit <= 0) return res.status(errors["400.2"].code).send(errors["400.2"]);
     }
     if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
     if (req.headers["content-type"] !== "application/json") return res.status(errors[415].code).send(errors[415]);
