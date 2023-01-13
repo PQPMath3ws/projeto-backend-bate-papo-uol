@@ -2,10 +2,10 @@
   "name": "projeto13-batepapo-uol-api",
   "version": "1.0.0",
   "description": "A simple API for Driven project called Bate-Papo UOL with Mongo DBMS",
-  "main": "index.js",
+  "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js --inspect"
+    "start": "nodemon src/app.js --inspect"
   },
   "keywords": [
     "mongo",
