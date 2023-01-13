@@ -8,6 +8,7 @@ const errors = {
     404.2: setError(404, "user not found in server"),
     405: setError(405, "method not allowed"),
     409.1: setError(409, "participant already registered"),
+    415: setError(415, "invalid content-type"),
     422.1: setError(422, ""),
 };
 

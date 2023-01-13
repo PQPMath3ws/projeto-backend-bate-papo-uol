@@ -1,4 +1,5 @@
 import express from "express";
+import utf8 from "utf8";
 
 import errors from "../const/errors.js";
 import { validateMessage } from "../schema/messages.js";
@@ -8,6 +9,7 @@ const router = express.Router();
 
 router.all("/participants", async (req, res) => {
     if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
+    if (req.headers["content-type"] !== "application/json") return res.status(errors[415].code).send(errors[415]);
     const participantValidation = await validateParticipant(req.participant);
     if (participantValidation.status !== "ok") {
         errors["422.1"].message = participantValidation.message;
@@ -17,13 +19,19 @@ router.all("/participants", async (req, res) => {
 });
 
 router.all("/messages", async (req, res) => {
-    const { user } = req.headers;
+    let { user } = req.headers;
+    try {
+        user = utf8.decode(user);
+    } catch (_) {
+        user = user;
+    }
     if (!user || (user && typeof user !== "string")) return res.status(errors["400.3"].code).send(errors["400.3"]);
     if (req.method === "GET") {
         const { limit } = req.query;
         if (limit && Number.isNaN(parseInt(limit))) return res.status(errors["400.2"].code).send(errors["400.2"]);
     }
     if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
+    if (req.headers["content-type"] !== "application/json") return res.status(errors[415].code).send(errors[415]);
     if (req.noParticipant) {
         errors["422.1"].message = "participant/sender not logged in";
         return res.status(errors["422.1"].code).send(errors["422.1"]);
@@ -34,7 +42,12 @@ router.all("/messages", async (req, res) => {
 });
 
 router.all("/status", async (req, res) => {
-    const { user } = req.headers;
+    let { user } = req.headers;
+    try {
+        user = utf8.decode(user);
+    } catch (_) {
+        user = user;
+    }
     if (!user || (user && typeof user !== "string")) return res.status(errors["400.3"].code).send(errors["400.3"]);
     if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
     return res.status(errors["404.2"].code).send(errors["404.2"]);

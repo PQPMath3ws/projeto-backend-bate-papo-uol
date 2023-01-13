@@ -17,6 +17,7 @@ router.get("/participants", async (req, res) => {
 });
 
 router.post("/participants", async (req, res, next) => {
+    if (req.headers["content-type"] !== "application/json") return next();
     const { name } = req.body;
     const participant = {
         name,

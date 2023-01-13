@@ -43,7 +43,13 @@ router.get("/messages", async (req, res, next) => {
 });
 
 router.post("/messages", async (req, res, next) => {
+    if (req.headers["content-type"] !== "application/json") return next();
     let { user } = req.headers;
+    try {
+        user = utf8.decode(user);
+    } catch (_) {
+        user = user;
+    }
     if (!user || (user && typeof user !== "string")) return next();
     user = utf8.decode(user);
     const participantExists = await getDbInstance().collection("participants").findOne({name: user});
