@@ -35,7 +35,7 @@ function initializeServer() {
         app.use(StatusRoutes);
         app.use(ErrorsRoutes);
         
-        server = app.listen(process.env.APP_PORT);
+        server = app.listen(5000);
     }
 
     process.on("SIGTERM", onShutDownServer);
