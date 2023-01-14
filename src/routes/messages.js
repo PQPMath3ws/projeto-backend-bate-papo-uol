@@ -1,3 +1,4 @@
+import { stripHtml } from "string-strip-html";
 import dayjs from "dayjs";
 import express from "express";
 import utf8 from "utf8";
@@ -8,8 +9,10 @@ import { validateMessage } from "../schema/messages.js";
 const router = express.Router();
 
 router.get("/messages", async (req, res, next) => {
-    const { user } = req.headers;
+    let { user } = req.headers;
     if (!user || (user && typeof user !== "string")) return next();
+    user = stripHtml(user).result;
+    user = user.trim();
     const { limit } = req.query;
     if (limit && Number.isNaN(parseInt(limit))) return next();
     if (limit <= 0) return next();
@@ -52,13 +55,20 @@ router.post("/messages", async (req, res, next) => {
         user = user;
     }
     if (!user || (user && typeof user !== "string")) return next();
-    user = utf8.decode(user);
+    user = stripHtml(user).result;
+    user = user.trim();
     const participantExists = await getDbInstance().collection("participants").findOne({name: user});
     if (!participantExists) {
         req.noParticipant = true;
         return next();
     }
-    const { to, text, type } = req.body;
+    let { to, text, type } = req.body;
+    to = stripHtml(to).result;
+    to = to.trim();
+    text = stripHtml(text).result;
+    text = text.trim();
+    type = stripHtml(type).result;
+    type = type.trim();
     let message = {
         from: user,
         to,

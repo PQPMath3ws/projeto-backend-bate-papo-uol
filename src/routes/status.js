@@ -1,3 +1,4 @@
+import { stripHtml } from "string-strip-html";
 import express from "express";
 import utf8 from "utf8";
 
@@ -13,6 +14,8 @@ router.post("/status", async (req, res, next) => {
         user = user;
     }
     if (!user || (user && typeof user !== "string")) return next();
+    user = stripHtml(user).result;
+    user = user.trim();
     const userExists = await getDbInstance().collection("participants").findOne({name: user});
     if (!userExists) {
         req.noUser = true;

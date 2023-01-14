@@ -1,3 +1,4 @@
+import { stripHtml } from "string-strip-html";
 import dayjs from "dayjs";
 import express from "express";
 
@@ -18,7 +19,9 @@ router.get("/participants", async (req, res) => {
 
 router.post("/participants", async (req, res, next) => {
     if (req.headers["content-type"] !== "application/json") return next();
-    const { name } = req.body;
+    let { name } = req.body;
+    name = stripHtml(name).result;
+    name = name.trim();
     const participant = {
         name,
         lastStatus: Date.now(),

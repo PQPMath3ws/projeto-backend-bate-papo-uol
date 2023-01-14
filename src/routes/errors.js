@@ -1,3 +1,4 @@
+import { stripHtml } from "string-strip-html";
 import express from "express";
 import utf8 from "utf8";
 
@@ -26,6 +27,8 @@ router.all("/messages", async (req, res) => {
         user = user;
     }
     if (!user || (user && typeof user !== "string")) return res.status(errors["400.3"].code).send(errors["400.3"]);
+    user = stripHtml(user).result;
+    user = user.trim();
     if (req.method === "GET") {
         const { limit } = req.query;
         if (limit && Number.isNaN(parseInt(limit))) return res.status(errors["400.2"].code).send(errors["400.2"]);
@@ -50,6 +53,8 @@ router.all("/status", async (req, res) => {
         user = user;
     }
     if (!user || (user && typeof user !== "string")) return res.status(errors["400.3"].code).send(errors["400.3"]);
+    user = stripHtml(user).result;
+    user = user.trim();
     if (req.method !== "POST") return res.status(errors[405].code).send(errors[405]);
     return res.status(errors["404.2"].code).send(errors["404.2"]);
 });
