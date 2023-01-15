@@ -54,11 +54,14 @@ router.all("/messages/:id", async (req, res) => {
         user = user;
     }
     if (!user || (user && typeof user !== "string")) return res.status(errors["400.3"].code).send(errors["400.3"]);
-    if (req.method === "DELETE") {
-        if (req.noMessageExists) return res.status(errors["404.3"].code).send(errors["404.3"]);
-        if (req.notUserSenderMessage) return res.status(errors["401.1"].code).send(errors["401.1"]);
-    } else {
+    if (req.noMessageExists) return res.status(errors["404.3"].code).send(errors["404.3"]);
+    if (req.notUserSenderMessage) return res.status(errors[req.method === "DELETE" ? "401.1" : "401.2"].code).send(errors[req.method === "DELETE" ? "401.1" : "401.2"]);
+    const messageValidation = await validateMessage(req.message);
+    if (messageValidation.status !== "ok") {
+        errors["422.1"].message = messageValidation.message;
+        return res.status(errors["422.1"].code).send(errors["422.1"]);
     }
+    return res.status(errors["404.4"].code).send(errors["404.4"]);
 });
 
 router.all("/status", async (req, res) => {

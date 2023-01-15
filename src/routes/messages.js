@@ -108,4 +108,54 @@ router.delete("/messages/:id", async (req, res, next) => {
     return res.status(200).send({code: 200, message: "message deleted successfully"});
 });
 
+router.put("/messages/:id", async (req, res, next) => {
+    let { user } = req.headers;
+    try {
+        user = utf8.decode(user);
+    } catch (_) {
+        user = user;
+    }
+    if (!user || (user && typeof user !== "string")) return next();
+    user = stripHtml(user).result;
+    user = user.trim();
+    let { id } = req.params;
+    id = stripHtml(id).result;
+    id = id.trim();
+    let messageExists = await getDbInstance().collection("messages").findOne({_id: mongo.ObjectId(id)});
+    if (!messageExists) {
+        req.noMessageExists = true;
+        return next();
+    }
+    if (messageExists.from !== user) {
+        req.notUserSenderMessage = true;
+        return next();
+    }
+    let { to, text, type } = req.body;
+    to = stripHtml(to).result;
+    to = to.trim();
+    text = stripHtml(text).result;
+    text = text.trim();
+    type = stripHtml(type).result;
+    type = type.trim();
+    messageExists = {
+        from: messageExists.from,
+        to,
+        text,
+        type,
+        time: dayjs().format("HH:mm:ss"),
+    }
+    const messageValidation = await validateMessage(messageExists);
+    if (messageValidation.status !== "ok") {
+        req.message = messageExists;
+        return next();
+    }
+    const updatedMesage = await getDbInstance().collection("messages").updateOne({
+        _id: mongo.ObjectId(id),
+    }, {
+        $set: messageExists
+    });
+    if (updatedMesage.modifiedCount === 0) return next();
+    return res.status(200).send({code: 200, message: "message updated successfully"});
+});
+
 export default router;
