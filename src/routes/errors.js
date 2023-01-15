@@ -45,6 +45,22 @@ router.all("/messages", async (req, res) => {
     return res.status(errors["422.1"].code).send(errors["422.1"]);
 });
 
+router.all("/messages/:id", async (req, res) => {
+    if (req.method !== "PUT" && req.method !== "DELETE") return res.status(errors[405].code).send(errors[405]);
+    let { user } = req.headers;
+    try {
+        user = utf8.decode(user);
+    } catch (_) {
+        user = user;
+    }
+    if (!user || (user && typeof user !== "string")) return res.status(errors["400.3"].code).send(errors["400.3"]);
+    if (req.method === "DELETE") {
+        if (req.noMessageExists) return res.status(errors["404.3"].code).send(errors["404.3"]);
+        if (req.notUserSenderMessage) return res.status(errors["401.1"].code).send(errors["401.1"]);
+    } else {
+    }
+});
+
 router.all("/status", async (req, res) => {
     let { user } = req.headers;
     try {

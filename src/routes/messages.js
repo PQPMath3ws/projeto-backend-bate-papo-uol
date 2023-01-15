@@ -1,6 +1,7 @@
 import { stripHtml } from "string-strip-html";
 import dayjs from "dayjs";
 import express from "express";
+import mongo from "mongodb";
 import utf8 from "utf8";
 
 import { getDbInstance } from "../config/database.js";
@@ -79,6 +80,32 @@ router.post("/messages", async (req, res, next) => {
     }
     await getDbInstance().collection("messages").insertOne(message);
     return res.status(201).send({code: 201, message: "message sended successfully"});
+});
+
+router.delete("/messages/:id", async (req, res, next) => {
+    let { user } = req.headers;
+    try {
+        user = utf8.decode(user);
+    } catch (_) {
+        user = user;
+    }
+    if (!user || (user && typeof user !== "string")) return next();
+    user = stripHtml(user).result;
+    user = user.trim();
+    let { id } = req.params;
+    id = stripHtml(id).result;
+    id = id.trim();
+    const messageExists = await getDbInstance().collection("messages").findOne({_id: mongo.ObjectId(id)});
+    if (!messageExists) {
+        req.noMessageExists = true;
+        return next();
+    }
+    if (messageExists.from !== user) {
+        req.notUserSenderMessage = true;
+        return next();
+    }
+    await getDbInstance().collection("messages").deleteOne({_id: messageExists._id});
+    return res.status(200).send({code: 200, message: "message deleted successfully"});
 });
 
 export default router;
