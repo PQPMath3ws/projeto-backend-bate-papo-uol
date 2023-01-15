@@ -37,10 +37,6 @@ router.get("/messages", async (req, res, next) => {
                 type: "status",
             },
         ],
-    }, {
-        projection:{
-            _id:0
-        }
     }).toArray();
     if (limit) messages = messages.slice(0, parseInt(limit));
     return res.status(200).send(messages);
