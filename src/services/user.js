@@ -8,7 +8,7 @@ async function removeDisconnectedUsers() {
     if (rduInterval) clearInterval(rduInterval);
     rduInterval = setInterval(async function() {
         let users = await getDbInstance().collection("participants").find().toArray();
-        users = users.filter(user => Date.now() - user.lastStatus >= 15000);
+        users = users.filter((user) => Date.now() - user.lastStatus >= 15000);
         for (let i = 0; i < users.length; i++) {
             const messageStatus = {
                 from: users[i].name,

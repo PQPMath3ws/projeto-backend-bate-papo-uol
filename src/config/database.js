@@ -6,13 +6,13 @@ dotenv.config();
 let mongoConnection = null;
 let db = null;
 
-const openDbConnection = callback => {
+const openDbConnection = (callback) => {
     if (!mongoConnection) {
         mongoConnection = new MongoClient(process.env.DATABASE_URL, { useUnifiedTopology: true });
-        mongoConnection.connect().then(client => {
+        mongoConnection.connect().then((client) => {
             db = client.db();
             callback(null);
-        }).catch(error => {
+        }).catch((error) => {
             callback(error);
         });
     }
@@ -23,7 +23,7 @@ const getDbInstance = () => {
     return db;
 };
 
-const closeDbConnection = callback => {
+const closeDbConnection = (callback) => {
     if (mongoConnection) {
         mongoConnection.close().then((client) => {
             db = client;
